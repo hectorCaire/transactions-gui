@@ -1,5 +1,8 @@
 <link rel="import" href="../polymer/polymer-element.html">
-
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <dom-module id="transactions-gui">
   <template>
     <style>
@@ -7,13 +10,30 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+    <div>
+      <label>From:[[from]]</label>
+      <paper-dropdown-menu label="To:">
+        <paper-listbox   selected="{{to}}">
+          <template is="dom-repeat" items="[[players]]" as="player">
+              <paper-item selected-item="[[player.id]]">[[player.alias]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-input id="amount" value="{{amount}}" label="Amount:"></paper-input>
+      <paper-dropdown-menu label="Property:">
+        <paper-listbox   selected="{{propery}}">
+          <template is="dom-repeat" items="[[properties]]" as="country">
+              <paper-item selected-item="[[country.id]]">[[country.name]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </div>
   </template>
 
   <script>
     /**
      * `transactions-gui`
-     * 
+     *
      *
      * @customElement
      * @polymer
@@ -23,12 +43,43 @@
       static get is() { return 'transactions-gui'; }
       static get properties() {
         return {
-          prop1: {
+          from: {
             type: String,
-            value: 'transactions-gui'
+            value: ''
+          },
+          to:{
+            type:String,
+            value:'',
+            reflectToAttribute: true,
+            observer: 'getProperties'
+          },
+          amount:{
+            type:Number,
+            value:null
+          },
+          date:{
+            type:String,
+            value:''
+          },
+          property:{
+            type:String,
+            value:''
+          },
+          players:{
+            type:Array,
+            value:[]
+          },
+          properties:{
+            type:Array,
+            value:[]
           }
         };
       }
+
+      getProperties(){
+        this.properties
+      }
+
     }
 
     window.customElements.define(TransactionsGui.is, TransactionsGui);
