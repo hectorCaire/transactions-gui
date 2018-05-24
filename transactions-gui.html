@@ -9,25 +9,34 @@
       :host {
         display: block;
       }
+
+      button{
+        background: #4CBB17;
+        font-weight: bold;
+        border:1px solid #666;
+        border-radius: 5px;
+        padding:10px 20px;
+      }
     </style>
     <div>
-      <label>From:[[from]]</label>
+      <label>From:[[from.name]]</label>
       <paper-dropdown-menu label="To:">
         <paper-listbox   selected="{{to}}">
-          <template is="dom-repeat" items="[[players]]" as="player">
+          <template is="dom-repeat" items="[[playersList]]" as="player">
               <paper-item selected-item="[[player.id]]">[[player.alias]]</paper-item>
           </template>
         </paper-listbox>
       </paper-dropdown-menu>
-      <paper-input id="amount" value="{{amount}}" label="Amount:"></paper-input>
+      <paper-input id="amount" value="{{amount}}" label="Amount:" auto-validate pattern="[\d]*"></paper-input>
       <paper-dropdown-menu label="Property:">
         <paper-listbox   selected="{{propery}}">
-          <template is="dom-repeat" items="[[properties]]" as="country">
+          <template is="dom-repeat" items="[[playerProperties]]" as="country">
               <paper-item selected-item="[[country.id]]">[[country.name]]</paper-item>
           </template>
         </paper-listbox>
       </paper-dropdown-menu>
     </div>
+    <button id="actionButton" on-click="postTrtansaction">Save</button>
   </template>
 
   <script>
@@ -44,8 +53,8 @@
       static get properties() {
         return {
           from: {
-            type: String,
-            value: ''
+            type: Object,
+            value: {}
           },
           to:{
             type:String,
@@ -65,19 +74,43 @@
             type:String,
             value:''
           },
-          players:{
+          playersList:{
             type:Array,
             value:[]
           },
-          properties:{
+          propertiesList:{
             type:Array,
             value:[]
-          }
+          },
+          playerProperties:{
+            type:Array,
+            value:[]
+          },
         };
       }
 
+
+      postTransaction(){
+        let transaction={};
+        transaction["from"]=this.from;
+        transaction["to"]=this.to;
+        transaction["amount"]=this.amount;
+        transaction["property"]=this.property;
+        this.dispatchEvent(new CustomEvent('transaction-posted', {
+            bubbles: true,
+            composed: true,
+            detail: transaction
+        }));
+      }
+
       getProperties(){
-        this.properties
+        let result=[];
+        for (const localProperty of this.propertiesList){
+          if (localProperty.owner===this.to){
+            result.push(localProperty);
+          }
+        }
+        this.set('playerProperties',result);
       }
 
     }
